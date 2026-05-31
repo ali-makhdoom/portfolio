@@ -20,8 +20,110 @@
             if(src.startsWith('/images/')) img.setAttribute('src', src.slice(1));
           }catch(e){}
         }
+
+        // Append additional projects to the Projects grid after React renders
+        function injectProjects(){
+          const projectsRoot = document.querySelector('#projects');
+          if(!projectsRoot) return;
+          const grid = projectsRoot.querySelector('.grid') || projectsRoot.querySelector('div');
+          if(!grid) return;
+
+          const newProjects = [
+            {
+              name: 'BayBurger (Restaurant Website)',
+              description: 'Responsive website for BayBurger — menu, ordering, and contact.',
+              tags: ['WEB','UI/UX','E-COMMERCE'],
+              image: 'https://onlinestars.tech/uploads/img/portfolio/1768414242-screencapture-bayburger-ch-2024-12-28-02_36_59.webp',
+              href: 'https://bayburger.ch/'
+            },
+            {
+              name: 'SoloExpress (Courier/Fulfillment)',
+              description: 'Courier & logistics site with booking flow and tracking.',
+              tags: ['WEB','LOGISTICS','INTEGRATION'],
+              image: 'https://onlinestars.tech/uploads/img/portfolio/1768414174-screencapture-soloexpress-ch-2024-12-28-02_41_15.webp',
+              href: '#'
+            },
+            {
+              name: 'EasyStorageSolution (SaaS Landing)',
+              description: 'Landing and conversion funnel for storage solutions.',
+              tags: ['FUNNEL','LANDING','CONVERSION'],
+              image: 'https://onlinestars.tech/uploads/img/portfolio/1768413855-screencapture-easystoragesolution-2024-12-28-02_45_32.webp',
+              href: '#'
+            },
+            {
+              name: 'Mumu Photo Booths (Event Services)',
+              description: 'Photo booth booking site for events and weddings.',
+              tags: ['WEB','EVENTS','BOOKING'],
+              image: 'https://onlinestars.tech/uploads/img/portfolio/1768413581-screencapture-mumuphotobooths-ca-2024-12-28-02_29_44_1%20(1).webp',
+              href: '#'
+            },
+            {
+              name: 'Landing Page Showcase',
+              description: 'High-converting landing page and demo funnel.',
+              tags: ['LANDING','DESIGN'],
+              image: 'https://onlinestars.tech/uploads/img/portfolio/1768413283-LandingPage.png',
+              href: '#'
+            }
+          ];
+
+          // Create project card HTML that matches existing styles
+          newProjects.forEach(p=>{
+            const card = document.createElement('div');
+            card.className = 'border border-[rgba(241,241,241,0.06)] overflow-hidden hover:border-[rgba(197,184,165,0.3)] transition-all duration-300 group';
+
+            const mediaWrap = document.createElement('div');
+            mediaWrap.className = 'aspect-[16/10] overflow-hidden';
+            const img = document.createElement('img');
+            img.className = 'w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-400';
+            img.loading = 'lazy';
+            img.alt = p.name;
+            img.src = p.image;
+            mediaWrap.appendChild(img);
+
+            const body = document.createElement('div');
+            body.className = 'p-6';
+            const h3 = document.createElement('h3');
+            h3.className = "text-[1.5rem] text-[#f1f1f1]";
+            h3.style.fontFamily = "'Playfair Display', serif";
+            h3.style.fontWeight = '400';
+            h3.textContent = p.name;
+            const desc = document.createElement('p');
+            desc.className = 'text-[#b3b3b3] text-[0.9rem] mt-2 leading-[1.6]';
+            desc.textContent = p.description;
+            const tagsWrap = document.createElement('div');
+            tagsWrap.className = 'flex flex-wrap gap-2 mt-4';
+            p.tags.forEach(t=>{
+              const span = document.createElement('span');
+              span.className = 'font-mono-meta text-[0.7rem] uppercase border border-[rgba(197,184,165,0.25)] text-[#c5b8a5] px-2 py-0.5';
+              span.textContent = t;
+              tagsWrap.appendChild(span);
+            });
+
+            body.appendChild(h3);
+            body.appendChild(desc);
+            body.appendChild(tagsWrap);
+
+            // if href provided, wrap card in anchor
+            if(p.href && p.href !== '#'){
+              const a = document.createElement('a');
+              a.href = p.href;
+              a.target = '_blank';
+              a.rel = 'noopener noreferrer';
+              a.appendChild(mediaWrap);
+              a.appendChild(body);
+              card.appendChild(a);
+            } else {
+              card.appendChild(mediaWrap);
+              card.appendChild(body);
+            }
+
+            grid.appendChild(card);
+          });
+        }
+
         document.addEventListener('DOMContentLoaded', ()=>{
           document.querySelectorAll('img').forEach(fixSrc);
+          // Observe and fix any images added dynamically
           const mo = new MutationObserver(muts=>{
             for(const m of muts)for(const n of m.addedNodes)if(n.nodeType===1){
               if(n.tagName==='IMG')fixSrc(n);
@@ -29,6 +131,11 @@
             }
           });
           mo.observe(document.body,{childList:true,subtree:true});
+
+          // Try injecting projects after a short delay to let React render
+          setTimeout(injectProjects, 600);
+          // Also attempt again after images/data settle
+          setTimeout(injectProjects, 1600);
         });
       })();
     </script>
